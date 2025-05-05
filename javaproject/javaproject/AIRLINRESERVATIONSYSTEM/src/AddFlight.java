@@ -1,64 +1,55 @@
-import java.sql.*;
 import javax.swing.*;
+import java.awt.*;
+import java.sql.*;
 
 public class AddFlight extends JFrame {
-    JTextField tfFlightNo, tfSource, tfDestination, tfDepart, tfArrive, tfPrice;
-    JButton btnAdd;
+
+    private JTextField tfFlightNo, tfSource, tfDestination, tfDepart, tfArrive, tfPrice;
+    private JButton btnAdd;
 
     public AddFlight() {
         setTitle("Add Flight");
-        setSize(400, 300);
-        setLayout(null);
+        setSize(400, 400);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
 
-        JLabel lblFlightNo = new JLabel("Flight No:");
-        lblFlightNo.setBounds(20, 20, 100, 20);
-        add(lblFlightNo);
-        tfFlightNo = new JTextField();
-        tfFlightNo.setBounds(150, 20, 200, 20);
-        add(tfFlightNo);
+        // Form layout with padding and spacing
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        JLabel lblSource = new JLabel("Source:");
-        lblSource.setBounds(20, 50, 100, 20);
-        add(lblSource);
-        tfSource = new JTextField();
-        tfSource.setBounds(150, 50, 200, 20);
-        add(tfSource);
-
-        JLabel lblDestination = new JLabel("Destination:");
-        lblDestination.setBounds(20, 80, 100, 20);
-        add(lblDestination);
-        tfDestination = new JTextField();
-        tfDestination.setBounds(150, 80, 200, 20);
-        add(tfDestination);
-
-        JLabel lblDepart = new JLabel("Departure:");
-        lblDepart.setBounds(20, 110, 100, 20);
-        add(lblDepart);
-        tfDepart = new JTextField();
-        tfDepart.setBounds(150, 110, 200, 20);
-        add(tfDepart);
-
-        JLabel lblArrive = new JLabel("Arrival:");
-        lblArrive.setBounds(20, 140, 100, 20);
-        add(lblArrive);
-        tfArrive = new JTextField();
-        tfArrive.setBounds(150, 140, 200, 20);
-        add(tfArrive);
-
-        JLabel lblPrice = new JLabel("Price:");
-        lblPrice.setBounds(20, 170, 100, 20);
-        add(lblPrice);
-        tfPrice = new JTextField();
-        tfPrice.setBounds(150, 170, 200, 20);
-        add(tfPrice);
+        tfFlightNo = createLabeledField(panel, "Flight No:");
+        tfSource = createLabeledField(panel, "Source:");
+        tfDestination = createLabeledField(panel, "Destination:");
+        tfDepart = createLabeledField(panel, "Departure:");
+        tfArrive = createLabeledField(panel, "Arrival:");
+        tfPrice = createLabeledField(panel, "Price:");
 
         btnAdd = new JButton("Add Flight");
-        btnAdd.setBounds(150, 210, 150, 30);
-        add(btnAdd);
-
+        btnAdd.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnAdd.setPreferredSize(new Dimension(120, 35));
         btnAdd.addActionListener(e -> addFlight());
 
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(btnAdd);
+
+        add(panel);
         setVisible(true);
+    }
+
+    private JTextField createLabeledField(JPanel panel, String label) {
+        JTextField field = new JTextField(20);
+        addLabeledComponent(panel, label, field);
+        return field;
+    }
+
+    private void addLabeledComponent(JPanel panel, String labelText, JComponent component) {
+        JLabel label = new JLabel(labelText);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        component.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        panel.add(label);
+        panel.add(component);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
     }
 
     private void addFlight() {
@@ -73,9 +64,15 @@ public class AddFlight extends JFrame {
             ps.setString(5, tfArrive.getText());
             ps.setDouble(6, Double.parseDouble(tfPrice.getText()));
             ps.executeUpdate();
+
             JOptionPane.showMessageDialog(this, "Flight added successfully!");
         } catch (Exception ex) {
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         }
+    }
+
+    public static void main(String[] args) {
+        new AddFlight();
     }
 }

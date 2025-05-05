@@ -1,121 +1,100 @@
-import java.sql.*;
 import javax.swing.*;
+import java.awt.*;
+import java.sql.*;
 
 public class RegisterGUI extends JFrame {
 
     private JTextField tfName, tfEmail, tfMobile, tfPassport, tfNationality;
     private JPasswordField pfPassword;
     private JButton btnRegister;
-    private JComboBox<String> cbRole; // ComboBox for Role
+    private JComboBox<String> cbRole;
 
     public RegisterGUI() {
         setTitle("User Registration");
-        setSize(400, 500); // Increased size to accommodate the role field
-        setLayout(null);
+        setSize(400, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Name Field
-        JLabel lblName = new JLabel("Name:");
-        lblName.setBounds(30, 30, 100, 25);
-        add(lblName);
-        tfName = new JTextField();
-        tfName.setBounds(150, 30, 200, 25);
-        add(tfName);
+        // Use BoxLayout for vertical form-style layout
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        // Password Field
-        JLabel lblPassword = new JLabel("Password:");
-        lblPassword.setBounds(30, 70, 100, 25);
-        add(lblPassword);
-        pfPassword = new JPasswordField();
-        pfPassword.setBounds(150, 70, 200, 25);
-        add(pfPassword);
+        tfName = createLabeledField(panel, "Name:");
+        pfPassword = new JPasswordField(20);
+        addLabeledComponent(panel, "Password:", pfPassword);
 
-        // Email Field
-        JLabel lblEmail = new JLabel("Email:");
-        lblEmail.setBounds(30, 110, 100, 25);
-        add(lblEmail);
-        tfEmail = new JTextField();
-        tfEmail.setBounds(150, 110, 200, 25);
-        add(tfEmail);
+        tfEmail = createLabeledField(panel, "Email:");
+        tfMobile = createLabeledField(panel, "Mobile No:");
+        tfPassport = createLabeledField(panel, "Passport:");
+        tfNationality = createLabeledField(panel, "Nationality:");
 
-        // Mobile Field
-        JLabel lblMobile = new JLabel("Mobile No:");
-        lblMobile.setBounds(30, 150, 100, 25);
-        add(lblMobile);
-        tfMobile = new JTextField();
-        tfMobile.setBounds(150, 150, 200, 25);
-        add(tfMobile);
+        cbRole = new JComboBox<>(new String[]{"User", "Admin"});
+        cbRole.setPreferredSize(new Dimension(250, 30));
+        addLabeledComponent(panel, "Role:", cbRole);
 
-        // Passport Field
-        JLabel lblPassport = new JLabel("Passport:");
-        lblPassport.setBounds(30, 190, 100, 25);
-        add(lblPassport);
-        tfPassport = new JTextField();
-        tfPassport.setBounds(150, 190, 200, 25);
-        add(tfPassport);
-
-        // Nationality Field
-        JLabel lblNationality = new JLabel("Nationality:");
-        lblNationality.setBounds(30, 230, 100, 25);
-        add(lblNationality);
-        tfNationality = new JTextField();
-        tfNationality.setBounds(150, 230, 200, 25);
-        add(tfNationality);
-
-        // Role ComboBox
-        JLabel lblRole = new JLabel("Role:");
-        lblRole.setBounds(30, 270, 100, 25);
-        add(lblRole);
-        String[] roles = {"User", "Admin"}; // Define roles
-        cbRole = new JComboBox<>(roles);
-        cbRole.setBounds(150, 270, 200, 25);
-        add(cbRole);
-
-        // Register Button
         btnRegister = new JButton("Register");
-        btnRegister.setBounds(130, 320, 120, 35);
-        add(btnRegister);
+        btnRegister.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnRegister.setPreferredSize(new Dimension(120, 35));
+        btnRegister.addActionListener(e -> registerUser());
 
-        // Action Listener for Register Button
-        btnRegister.addActionListener(e -> {
-            String name = tfName.getText();
-            String password = new String(pfPassword.getPassword());
-            String email = tfEmail.getText();
-            String mobile = tfMobile.getText();
-            String passport = tfPassport.getText();
-            String nationality = tfNationality.getText();
-            String role = cbRole.getSelectedItem().toString(); // Get selected role
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(btnRegister);
 
-            try {
-                Connection con = DBConnection.getConnection();  // Use your connection method
-                String sql = "INSERT INTO users (name, password, email, mobile, passport, nationality, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                PreparedStatement ps = con.prepareStatement(sql);
-                ps.setString(1, name);
-                ps.setString(2, password);
-                ps.setString(3, email);
-                ps.setString(4, mobile);
-                ps.setString(5, passport);
-                ps.setString(6, nationality);
-                ps.setString(7, role);  // Insert role into database
-
-                int result = ps.executeUpdate();
-                if (result > 0) {
-                    JOptionPane.showMessageDialog(this, "Registration successful!");
-                    dispose(); // Close the registration window
-                } else {
-                    JOptionPane.showMessageDialog(this, "Failed to register. Try again.");
-                }
-
-                ps.close();
-                con.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
-            }
-        });
-
+        add(panel);
         setVisible(true);
+    }
+
+    private JTextField createLabeledField(JPanel panel, String label) {
+        JTextField field = new JTextField(20);
+        addLabeledComponent(panel, label, field);
+        return field;
+    }
+
+    private void addLabeledComponent(JPanel panel, String labelText, JComponent component) {
+        JLabel label = new JLabel(labelText);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        component.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        panel.add(label);
+        panel.add(component);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+    }
+
+    private void registerUser() {
+        String name = tfName.getText();
+        String password = new String(pfPassword.getPassword());
+        String email = tfEmail.getText();
+        String mobile = tfMobile.getText();
+        String passport = tfPassport.getText();
+        String nationality = tfNationality.getText();
+        String role = cbRole.getSelectedItem().toString();
+
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "INSERT INTO users (name, password, email, mobile, passport, nationality, role) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, name);
+            ps.setString(2, password);
+            ps.setString(3, email);
+            ps.setString(4, mobile);
+            ps.setString(5, passport);
+            ps.setString(6, nationality);
+            ps.setString(7, role);
+
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Registration successful!");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to register. Try again.");
+            }
+
+            ps.close();
+            con.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
     }
 
     public static void main(String[] args) {

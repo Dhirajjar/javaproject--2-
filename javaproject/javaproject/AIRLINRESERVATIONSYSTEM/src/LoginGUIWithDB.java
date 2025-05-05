@@ -9,22 +9,29 @@ public class LoginGUIWithDB extends JFrame {
 
     public LoginGUIWithDB() {
         setTitle("Login");
-        setSize(300, 200);
-        setLocationRelativeTo(null);
+        setSize(350, 220);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(4, 1));
+        setLayout(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        setLocationRelativeTo(null);
 
-        tfUsername = new JTextField();
-        pfPassword = new JPasswordField();
+        JLabel lblUsername = new JLabel("Username:");
+        tfUsername = new JTextField(20);
+        tfUsername.setPreferredSize(new Dimension(250, 30));
+
+        JLabel lblPassword = new JLabel("Password:");
+        pfPassword = new JPasswordField(20);
+        pfPassword.setPreferredSize(new Dimension(250, 30));
+
         btnLogin = new JButton("Login");
+        btnLogin.setPreferredSize(new Dimension(150, 40));
+        btnLogin.addActionListener(e -> login());
 
-        add(new JLabel("Username:"));
+        // Add components to frame
+        add(lblUsername);
         add(tfUsername);
-        add(new JLabel("Password:"));
+        add(lblPassword);
         add(pfPassword);
         add(btnLogin);
-
-        btnLogin.addActionListener(e -> login());
 
         setVisible(true);
     }
@@ -34,18 +41,16 @@ public class LoginGUIWithDB extends JFrame {
         String password = String.valueOf(pfPassword.getPassword());
 
         try {
-            Connection con = DBConnection.getConnection();
+            Connection conn = DBConnection.getConnection();
             String sql = "SELECT * FROM users WHERE name = ? AND password = ?";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, username);
-            ps.setString(2, password);
-
-            ResultSet rs = ps.executeQuery();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
                 String role = rs.getString("role");
                 Session.currentUser = username;
-
                 JOptionPane.showMessageDialog(this, "Login successful as " + role);
                 this.dispose();
 
@@ -57,59 +62,67 @@ public class LoginGUIWithDB extends JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid credentials. Please try again.");
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void showAdminPanel() {
-        JFrame frame = new JFrame("Admin Panel");
-        frame.setSize(300, 200);
-        frame.setLayout(new GridLayout(3, 1));
-        frame.setLocationRelativeTo(null);
+        JFrame adminFrame = new JFrame("Admin Panel");
+        adminFrame.setSize(300, 200);
+        adminFrame.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        adminFrame.setLocationRelativeTo(null);
 
         JButton btnViewCustomers = new JButton("View Customers");
         JButton btnAddFlight = new JButton("Add Flight");
         JButton btnLogout = new JButton("Logout");
 
+        btnViewCustomers.setPreferredSize(new Dimension(200, 30));
+        btnAddFlight.setPreferredSize(new Dimension(200, 30));
+        btnLogout.setPreferredSize(new Dimension(200, 30));
+
         btnViewCustomers.addActionListener(e -> new ViewCustomers());
         btnAddFlight.addActionListener(e -> new AddFlight());
         btnLogout.addActionListener(e -> {
             Session.currentUser = null;
-            frame.dispose();
+            adminFrame.dispose();
             new LoginGUIWithDB();
         });
 
-        frame.add(btnViewCustomers);
-        frame.add(btnAddFlight);
-        frame.add(btnLogout);
+        adminFrame.add(btnViewCustomers);
+        adminFrame.add(btnAddFlight);
+        adminFrame.add(btnLogout);
 
-        frame.setVisible(true);
+        adminFrame.setVisible(true);
     }
 
     private void showUserPanel() {
-        JFrame frame = new JFrame("User Panel");
-        frame.setSize(300, 200);
-        frame.setLayout(new GridLayout(3, 1));
-        frame.setLocationRelativeTo(null);
+        JFrame userFrame = new JFrame("User Panel");
+        userFrame.setSize(300, 200);
+        userFrame.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        userFrame.setLocationRelativeTo(null);
 
         JButton btnBookFlight = new JButton("Book Flight");
-        JButton btnViewFlights = new JButton("Search Flights");
+        JButton btnSearchFlights = new JButton("Search Flights");
         JButton btnLogout = new JButton("Logout");
 
+        btnBookFlight.setPreferredSize(new Dimension(200, 30));
+        btnSearchFlights.setPreferredSize(new Dimension(200, 30));
+        btnLogout.setPreferredSize(new Dimension(200, 30));
+
         btnBookFlight.addActionListener(e -> new Booking());
-        btnViewFlights.addActionListener(e -> new SearchFlight());
+        btnSearchFlights.addActionListener(e -> new SearchFlight());
         btnLogout.addActionListener(e -> {
             Session.currentUser = null;
-            frame.dispose();
+            userFrame.dispose();
             new LoginGUIWithDB();
         });
 
-        frame.add(btnBookFlight);
-        frame.add(btnViewFlights);
-        frame.add(btnLogout);
+        userFrame.add(btnBookFlight);
+        userFrame.add(btnSearchFlights);
+        userFrame.add(btnLogout);
 
-        frame.setVisible(true);
+        userFrame.setVisible(true);
     }
 
     public static void main(String[] args) {

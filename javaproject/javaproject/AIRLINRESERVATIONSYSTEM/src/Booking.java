@@ -8,24 +8,55 @@ public class Booking extends JFrame {
 
     public Booking() {
         setTitle("Book Flight");
-        setSize(300, 250);
-        setLayout(new GridLayout(5, 1));
+        setSize(350, 300);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        tfName = new JTextField();
-        tfPassport = new JTextField();
-        tfFlightNo = new JTextField();
-        btnBook = new JButton("Book");
+        // Use a panel for better structure and layout
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10); // Padding around components
 
-        add(new JLabel("Name:"));
-        add(tfName);
-        add(new JLabel("Passport No:"));
-        add(tfPassport);
-        add(new JLabel("Flight No:"));
-        add(tfFlightNo);
-        add(btnBook);
+        // Name label and text field
+        JLabel lblName = new JLabel("Name:");
+        tfName = new JTextField(20);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(lblName, gbc);
+        gbc.gridx = 1;
+        panel.add(tfName, gbc);
 
+        // Passport label and text field
+        JLabel lblPassport = new JLabel("Passport No:");
+        tfPassport = new JTextField(20);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(lblPassport, gbc);
+        gbc.gridx = 1;
+        panel.add(tfPassport, gbc);
+
+        // Flight No label and text field
+        JLabel lblFlightNo = new JLabel("Flight No:");
+        tfFlightNo = new JTextField(20);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        panel.add(lblFlightNo, gbc);
+        gbc.gridx = 1;
+        panel.add(tfFlightNo, gbc);
+
+        // Book button
+        btnBook = new JButton("Book Flight");
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        panel.add(btnBook, gbc);
+
+        // Add the panel to the frame
+        add(panel);
+
+        // Button action
         btnBook.addActionListener(e -> book());
 
         setVisible(true);
@@ -51,7 +82,6 @@ public class Booking extends JFrame {
             ps.setString(2, passport);
             ps.setString(3, flightNo);
             
-    
             ps.executeUpdate();
             JOptionPane.showMessageDialog(this, "Flight booked successfully!");
             this.dispose(); // close window

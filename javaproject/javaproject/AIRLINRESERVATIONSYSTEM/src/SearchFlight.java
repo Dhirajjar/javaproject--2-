@@ -1,38 +1,63 @@
 import java.sql.*;
 import javax.swing.*;
+import java.awt.*;
 
 public class SearchFlight extends JFrame {
-    JTextField tfSource, tfDestination;
-    JTextArea taResults;
-    JButton btnSearch;
+    private JTextField tfSource, tfDestination;
+    private JTextArea taResults;
+    private JButton btnSearch;
 
     public SearchFlight() {
         setTitle("Search Flight");
         setSize(500, 400);
-        setLayout(null);
+        setLocationRelativeTo(null); // Center the window
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
+        // Panel with GridBagLayout for better alignment and design
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10); // Padding for spacing
+
+        // Source label and text field
         JLabel lblSource = new JLabel("Source:");
-        lblSource.setBounds(20, 20, 100, 20);
-        add(lblSource);
-        tfSource = new JTextField();
-        tfSource.setBounds(130, 20, 150, 20);
-        add(tfSource);
+        tfSource = new JTextField(20);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(lblSource, gbc);
+        gbc.gridx = 1;
+        panel.add(tfSource, gbc);
 
+        // Destination label and text field
         JLabel lblDest = new JLabel("Destination:");
-        lblDest.setBounds(20, 60, 100, 20);
-        add(lblDest);
-        tfDestination = new JTextField();
-        tfDestination.setBounds(130, 60, 150, 20);
-        add(tfDestination);
+        tfDestination = new JTextField(20);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        panel.add(lblDest, gbc);
+        gbc.gridx = 1;
+        panel.add(tfDestination, gbc);
 
-        btnSearch = new JButton("Search");
-        btnSearch.setBounds(300, 40, 100, 30);
-        add(btnSearch);
+        // Search button
+        btnSearch = new JButton("Search Flights");
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        panel.add(btnSearch, gbc);
 
-        taResults = new JTextArea();
-        taResults.setBounds(20, 100, 440, 240);
-        add(taResults);
+        // Text area for displaying results
+        taResults = new JTextArea(10, 30);
+        taResults.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(taResults);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        panel.add(scrollPane, gbc);
 
+        // Add panel to the frame
+        add(panel);
+
+        // Button action
         btnSearch.addActionListener(e -> searchFlights());
 
         setVisible(true);
@@ -47,7 +72,7 @@ public class SearchFlight extends JFrame {
             ps.setString(2, tfDestination.getText());
             ResultSet rs = ps.executeQuery();
     
-            taResults.setText("");
+            taResults.setText(""); // Clear previous results
             while (rs.next()) {
                 taResults.append("Flight No: " + rs.getString("flight_no") +
                                  ", Depart: " + rs.getString("departure_time") +

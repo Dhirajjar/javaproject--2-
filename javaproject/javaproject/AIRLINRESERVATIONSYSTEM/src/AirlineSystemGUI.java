@@ -10,27 +10,54 @@ public class AirlineSystemGUI extends JFrame {
 
     public AirlineSystemGUI() {
         setTitle("Airline Reservation System");
-        setSize(400, 200);
-        setLayout(new FlowLayout());
+        setSize(500, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);  // Center the window
+
+        // Use a panel with GridBagLayout for better control
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBackground(new Color(240, 248, 255)); // Light pastel background
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(15, 15, 15, 15);
+
+        JLabel titleLabel = new JLabel("Welcome to Airline Reservation System");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        titleLabel.setForeground(new Color(40, 40, 40));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        mainPanel.add(titleLabel, gbc);
 
         // Create Login Button
         JButton btnLogin = new JButton("Login");
-        btnLogin.setPreferredSize(new Dimension(150, 40));
+        styleButton(btnLogin);
         btnLogin.addActionListener(new ButtonController("login"));
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        mainPanel.add(btnLogin, gbc);
 
         // Create Register Button
         JButton btnRegister = new JButton("Register");
-        btnRegister.setPreferredSize(new Dimension(150, 40));
+        styleButton(btnRegister);
         btnRegister.addActionListener(new ButtonController("register"));
+        gbc.gridx = 1;
+        mainPanel.add(btnRegister, gbc);
 
-        // Add buttons to the frame
-        add(btnLogin);
-        add(btnRegister);
-
-        // Basic window settings
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);  // Center the window
+        // Add panel to the frame
+        add(mainPanel);
         setVisible(true);
+    }
+
+    // Apply consistent styling to buttons
+    private void styleButton(JButton button) {
+        button.setPreferredSize(new Dimension(160, 45));
+        button.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        button.setBackground(new Color(70, 130, 180));  // Steel Blue
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
     // Controller for the buttons
@@ -43,9 +70,7 @@ public class AirlineSystemGUI extends JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Set the clicked button's name
             clickedButton = buttonName;
-            // Print the result
             System.out.println("User clicked: " + clickedButton);
         }
     }
@@ -57,11 +82,7 @@ public class AirlineSystemGUI extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            AirlineSystemGUI gui = new AirlineSystemGUI();
-
-            // Example: After user clicks, you can check which button was clicked
-            // For testing, you can call this method after interaction
-            // System.out.println("Button clicked: " + gui.getClickedButton());
+            new AirlineSystemGUI();
         });
     }
 }
