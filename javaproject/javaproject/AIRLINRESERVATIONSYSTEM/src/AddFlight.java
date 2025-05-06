@@ -55,7 +55,7 @@ public class AddFlight extends JFrame {
     private void addFlight() {
         try {
             Connection con = DBConnection.getConnection();
-            String sql = "INSERT INTO flight (flightNo, Source, Destination, Departure, Arrival, Price) VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO flights (flight_no, source, destination, departure, arrival, price) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, tfFlightNo.getText());
             ps.setString(2, tfSource.getText());

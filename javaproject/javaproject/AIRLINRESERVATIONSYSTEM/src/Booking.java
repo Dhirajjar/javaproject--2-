@@ -63,30 +63,66 @@ public class Booking extends JFrame {
     }
 
     private void book() {
-        String name = tfName.getText();
-        String passport = tfPassport.getText();
-        String flightNo = tfFlightNo.getText();
+        String name = tfName.getText().trim();
+        String passport = tfPassport.getText().trim();
+        String flightNo = tfFlightNo.getText().trim();
 
-        System.out.println("Booking flight for: " + name + ", Passport: " + passport + ", Flight No: " + flightNo); // Debugging line
-    
         if (name.isEmpty() || passport.isEmpty() || flightNo.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill all fields.");
             return;
         }
-    
+
         try {
             Connection con = DBConnection.getConnection();
-            String sql = "INSERT INTO customers (name, passport_no, flight_no) VALUES (?, ?, ?)";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setString(1, name); // 👈 logged-in user
+
+            // ✅ Check if passport exists in users table
+            String checkUserSql = "SELECT * FROM users WHERE passport = ?";
+            PreparedStatement checkUserPs = con.prepareStatement(checkUserSql);
+            checkUserPs.setString(1, passport);
+            ResultSet userRs = checkUserPs.executeQuery();
+
+            if (!userRs.next()) {
+                JOptionPane.showMessageDialog(this, "Invalid passport number. No such user found.");
+                return;
+            }
+
+            // ✅ Check if flight exists in flights table
+            String checkFlightSql = "SELECT * FROM flights WHERE flight_no = ?";
+            PreparedStatement checkFlightPs = con.prepareStatement(checkFlightSql);
+            checkFlightPs.setString(1, flightNo);
+            ResultSet flightRs = checkFlightPs.executeQuery();
+
+            if (!flightRs.next()) {
+                JOptionPane.showMessageDialog(this, "Invalid flight number. No such flight found.");
+                return;
+            }
+
+            // ✅ Insert into customers table
+            String insertSql = "INSERT INTO customers (name, passport, flightNo) VALUES (?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(insertSql);
+            ps.setString(1, name);
             ps.setString(2, passport);
             ps.setString(3, flightNo);
-            
+
             ps.executeUpdate();
             JOptionPane.showMessageDialog(this, "Flight booked successfully!");
-            this.dispose(); // close window
+            this.dispose();
+
+            // Close resources
+            userRs.close();
+            flightRs.close();
+            checkUserPs.close();
+            checkFlightPs.close();
+            ps.close();
+            con.close();
+
         } catch (Exception ex) {
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         }
+    }
+
+    public static void main(String[] args) {
+        new Booking();
     }
 }

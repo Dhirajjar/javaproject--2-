@@ -66,7 +66,7 @@ public class SearchFlight extends JFrame {
     private void searchFlights() {
         try {
             Connection con = DBConnection.getConnection();
-            String sql = "SELECT * FROM flight WHERE source=? AND destination=?";
+            String sql = "SELECT * FROM flights WHERE source=? AND destination=?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, tfSource.getText());
             ps.setString(2, tfDestination.getText());
